@@ -1,6 +1,46 @@
 # 等离子体诊断方法-第二章：折射
 
 本文相关代码与介绍可在[PlasmaDiagnostic/Interferometer at main · DMCXE/PlasmaDiagnostic (github.com)](https://github.com/DMCXE/PlasmaDiagnostic/tree/main/Interferometer)中找到
+## 写在前面 基本用法
+
+计算文件为`DataProcess.py`, 存在两个主要功能：
+
+SignalAnalsis 构成了一个数据处理模块，最大程度模拟了我想象中可以单纯凭借电路实现的功能。输入采样频率fs，目标中频fm， 诊断信号，对照信号，可返回相位差等
+
+```python
+class SignalAnalsis:
+	def __init__(self,fs,fm_target,signal_plasma,signal_ref):...
+```
+
+density_string_integral构成了相位信息至密度信息的换算模块
+
+```python
+def density_string_integral(phi,f=650*1e9):
+    '''
+    计算弦密度积分
+    '''
+    e = 1.60217662e-19
+    m_e = 9.10938356e-31
+    c = 299792458
+    epsilon_0 = 8.854187817e-12
+    return phi*np.pi*c*epsilon_0*m_e*f/(e**2)
+```
+
+以Shot#232094中sig1为例：
+
+```python
+from DataProcess import SignalAnalysis, density_string_integral
+SA = SignalAnalysis(
+    fs              = fs,
+    fm_target       = fm_target,
+    signal_plasma   = sig1,
+    signal_ref      = ref
+)
+phi = SA.phi
+phi_fix = SA.phi #经过零点漂移矫正后的相位
+ndl = density_string_integral
+```
+
 
 ## 目录
 目录
